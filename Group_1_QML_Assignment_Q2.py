@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 # Model
 
 
-
 with open("data_small.txt", "r") as f:  # Read the data file
     data = f.readlines()                       
 
@@ -41,7 +40,7 @@ capacity=130
 A=[(i,j) for i in N for j in N if i!=j]     # set of arcs
 
 
-# Create array for euclidian distances between nodes 
+# Create array for the cost (or distance or time) parameter
 c=np.zeros((n,n))    
 for i in N:
     for j in N:
