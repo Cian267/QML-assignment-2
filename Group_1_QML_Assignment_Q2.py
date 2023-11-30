@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 
 # Model
 
-#Change for the test
-# moa test
 
 
 with open("data_small.txt", "r") as f:  # Read the data file
@@ -26,10 +24,10 @@ for line in data:
 VRP = np.array(VRP)
 
 
-N=VRP[:,0]                                  # Nodes
+N=VRP[:,0]                                  # Nodes/customers
 n=len(N)                                    # Number of nodes
 NbrOfVehicles=3                             # Nymber of vehicles
-V=range(NbrOfVehicles)                           # Set of vehicles
+V=range(NbrOfVehicles)                      # Set of vehicles
 
 xc=VRP[:,1]                                 # X-position of nodes
 yc=VRP[:,2]                                 # Y-position of nodes
