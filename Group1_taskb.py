@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Dec  6 12:49:22 2023
+Created on Thu Dec  7 10:33:01 2023
 
 @author: Moa
 """
@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 #============================================MODEL DATA============================================
 
-with open("data_tiny.txt", "r") as f:  # Read the data file
+with open("data_small.txt", "r") as f:  # Read the data file
     data = f.readlines()                       
 
 VRP = []                                    # Create array for data related to nodes
@@ -34,13 +34,11 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 
 
-
-
-K=3                                         # Number of vehicles
+K=3                                   # Number of vehicles
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
-
 C=range(1,len(N))
+
 
 xc=nodes[:,1]                               # X-position of nodes
 yc=nodes[:,2]                               # Y-position of nodes
@@ -49,8 +47,8 @@ r=nodes[:,4]                                # ready time of windows
 d=nodes[:,5]                                # due time of windows
 s=nodes[:,6]                                # service times at customers
 
-b=(13000000, 1300000, 1300000)                           # vehicle capacities
-M=10000                                  # big M
+b=(130, 130, 130)                           # vehicle capacities
+M=100000                                  # big M
 
 # Create array for euclidian distances between nodes - c(i,j)
 c=np.zeros((n,n))    
@@ -74,7 +72,7 @@ for i in N:
         for v in V:  
             x[i,j,v] = m.addVar(vtype=GRB.BINARY, lb = 0, name="X_%s,%s,%s" %(i,j,v))
             
-# service start time of vehicle v at node j
+# arrival time of vehicle v at customer i
 t = {}
 for j in N:
     for v in V:
@@ -82,7 +80,7 @@ for j in N:
 
 
 ## Objective - total distance traveled, i.e., total cost
-obj = (quicksum(c[i,j]*x[i,j,v] for i in N for j in N for v in V ))
+obj = (quicksum(c[i,j]*x[i,j,v] for i in N for j in N for v in V))
 m.setObjective(obj, GRB.MINIMIZE)
 
 
@@ -91,24 +89,25 @@ m.setObjective(obj, GRB.MINIMIZE)
 
 # All customers visited exactly once
 for i in C:
-    m.addConstr(quicksum(x[i,j,v] for j in N if i != j  for v in V )==1, 'conA[' + str(i) + ']-')
+    m.addConstr(quicksum(x[i,j,v] for j in N if i != j if j!=0 for v in V )==1, 'conA[' + str(i) + ']-')
     
 # Capacity constraint
 for v in V:
-    m.addConstr(quicksum(a[i]*x[i,j,v] for i in N for j in N if i != j) <= b[v] , 'conE[' +  str(v) + ']-')
+    m.addConstr(quicksum(a[i]*x[i,j,v] for i in C for j in N if i != j if j!=0) <= b[v] , 'conE[' +  str(v) + ']-')
     
 # All vehicles leave depot (once)
 for v in V:
-    m.addConstr(quicksum(x[0,j,v] for j in C)==1, 'conB[' +  str(v) + ']-')      
+    m.addConstr(quicksum(x[0,j,v] for j in N if j!=0 )==1, 'conB[' +  str(v) + ']-')      
 
 # Incoming and outcoming 
 for h in C:
     for v in V:
-         m.addConstr(quicksum(x[i,h,v] for i in N if h != i) == quicksum(x[h,j,v] for j in N if h!= j ), 'conC[' + str(h) + ',' + str(v) + ']-')    
+         m.addConstr(quicksum(x[i,h,v] for i in N if h !=i ) == quicksum(x[h,j,v] for j in N if h!= j  ), 'conC[' + str(h) + ',' + str(v) + ']-')    
 
 # All vehicles return to depot (once)
 for v in V:
-    m.addConstr(quicksum(x[i,5,v] for i in C) == 1, 'conD[' + str(v) + ']-')  
+    m.addConstr(quicksum(x[i,20,v] for i in C) == 1, 'conD[' + str(v) + ']-')  
+
 
 # Time window - part 1
 for j in N:
@@ -124,7 +123,10 @@ for j in N:
 for i in N:
     for j in N:
         for v in V:
-            m.addConstr(t[i,v] + c[i,j] + s[i] - M*(1-x[i,j,v]) <= t[j,v], 'conH[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
+            if j!=i:
+                if j!=0:
+                    if i!=20:
+                        m.addConstr(t[i,v] + c[i,j] + s[i] - M*(1-x[i,j,v]) <= t[j,v], 'conH[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
 
      
 
@@ -136,7 +138,7 @@ m.optimize()
 # Plot the routes that are decided to be travelled 
 arc_solution = m.getAttr('x', x)
 #
-fig= plt.figure(figsize=(10,10))
+fig= plt.figure(figsize=(6,6))
 plt.xlabel('x-coordinate')
 plt.ylabel('y-coordinate')
 plt.scatter(xc[1:n-1],yc[1:n-1])
@@ -144,7 +146,7 @@ for i in range(1,n-1):
     plt.annotate(str(i),(xc[i],yc[i]))
 plt.plot(xc[0],yc[0],c='g',marker='s')
         
-colors=('--g', ':r', ':.b')    
+colors=('--g', ':r', 'b')    
     
 for i in range(n):
     for j in range(n):
