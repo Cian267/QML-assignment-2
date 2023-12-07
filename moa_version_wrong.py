@@ -34,6 +34,9 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 
 
+print(nodes)
+
+
 K=3                                         # Number of vehicles
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
@@ -70,7 +73,7 @@ for i in N:
         for v in V:  
             x[i,j,v] = m.addVar(vtype=GRB.BINARY, lb = 0, name="X_%s,%s,%s" %(i,j,v))
             
-# arrival time of vehicle v at node j
+# service start time of vehicle v at node j
 t = {}
 for j in N:
     for v in V:
@@ -86,8 +89,8 @@ m.setObjective(obj, GRB.MINIMIZE)
 
 
 # All customers visited exactly once
-for i in range(1, len(N)-1):
-    m.addConstr(quicksum(x[i,j,v] for j in range(1, len(N)-1) if i != j for v in V )==1, 'conA[' + str(i) + ']-')
+for i in range(1, len(N)):
+    m.addConstr(quicksum(x[i,j,v] for j in range(1, len(N)) if i != j for v in V )==1, 'conA[' + str(i) + ']-')
     
 # Capacity constraint
 for v in V:
@@ -95,16 +98,16 @@ for v in V:
     
 # All vehicles leave depot (once)
 for v in V:
-    m.addConstr(quicksum(x[0,j,v] for j in range(1, len(N)-1))==1, 'conB[' +  str(v) + ']-')      
+    m.addConstr(quicksum(x[0,j,v] for j in range(1, len(N)))==1, 'conB[' +  str(v) + ']-')      
 
 # Incoming and outcoming 
-for h in range (1, len(N)-1):
+for h in range(1, len(N)):
     for v in V:
          m.addConstr(quicksum(x[i,h,v] for i in N if h != i) == quicksum(x[h,j,v] for j in N if h!= j ), 'conC[' + str(h) + ',' + str(v) + ']-')    
 
 # All vehicles return to depot (once)
 for v in V:
-    m.addConstr(quicksum(x[i,5,v] for i in range(1, len(N)-1)) == 1, 'conD[' + str(v) + ']-')  
+    m.addConstr(quicksum(x[i,20,v] for i in range(1, len(N))) == 1, 'conD[' + str(v) + ']-')  
 
 # Time window - part 1
 for j in N:
