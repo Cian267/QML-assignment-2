@@ -33,6 +33,7 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 
 K=3                                         # Number of vehicles
+
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
 C=range(1,len(N))                           # Set of customers
@@ -123,6 +124,81 @@ m.update()
 # m.write('VRPmodel.lp')
 m.Params.timeLimit = 1800 #time limit so optimization will stop after 1000 seconds 
 m.optimize()
+print("\nTotal distance travelled is: ", m.objVal)
+# for i in N:
+#     print('\n')
+#     for j in N:
+#         print(x[i,j,0].x)
+# t = 1
+# for i in N:
+#     s = '%8s' % t
+#     t = t + 1
+#     for j in N:
+#         s = s + '%8.1f' % x[i,j,0].x
+#     #s = s + '%8.1f' #% sum (k[p,m,1].x for m in M)    
+#     print (s)  
+
+for v in V:
+    print('\nTable of tours of vehicle ', v, ':\n')  
+    s = ' '
+    tt = 0
+    for j in range(0,len(N)):
+        s = s + '%5s' % j
+    
+    print(s)
+    for i in N:
+        s = str(tt)
+        tt = tt + 1
+        for j in N:
+            if int(x[i,j,v].x) > 0.5:
+                s = s + '    1'
+            else:
+                s = s + '    .'
+        print (s)       
+
+for v in V:
+    step = 0
+    ii = 0
+    jj = 0
+    order = [0]
+    time = [0]
+    
+    while step != 20:
+        if int(x[ii,jj,v].x) > 0.5:
+            step = jj
+            order.append(step)
+            time.append(round(float(t[jj,v].x), 1))
+            ii = jj
+            jj = 0
+        else:
+            jj = jj + 1
+    
+    timetable = np.vstack((order, time))
+    
+    total_demand = 0
+    for i in order:
+        total_demand = total_demand + a[i]
+    
+    load = [total_demand]
+    newload = total_demand
+    
+    for i in order:
+        load.append(newload - a[i])
+        newload = newload - a[i]
+    
+    load.pop()
+    
+    timetable = np.vstack((timetable,load))
+    print('\nTable of arrivel times of vehicle ', v, ':')  
+    s = ''
+    tt = 0
+    names = ['Node', 'Time', 'Load']
+    print(s)
+    for i in range(len(names)):
+        s = names[i]
+        for j in range(len(order)):
+            s = s + '%8s' % str(timetable[i,j])
+        print (s)
 
 # Plot the routes that are decided to be travelled 
 arc_solution = m.getAttr('x', x)
