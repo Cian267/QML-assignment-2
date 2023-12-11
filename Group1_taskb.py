@@ -36,7 +36,7 @@ K=3                                         # Number of vehicles
 
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
-C=range(1,len(N))                           # Set of customers
+C=range(1,len(N)-1)                           # Set of customers
 
 xc=nodes[:,1]                               # X-position of nodes
 yc=nodes[:,2]                               # Y-position of nodes
@@ -90,7 +90,7 @@ for v in V:
     
 # All vehicles leave depot exactly once
 for v in V:
-    m.addConstr(quicksum(x[0,j,v] for j in N if j!=0 )==1, 'conB[' +  str(v) + ']-')      
+    m.addConstr(quicksum(x[0,j,v] for j in N if j!=0 if j!=n-1)==1, 'conB[' +  str(v) + ']-')      
 
 # Incoming and outcoming arc
 for h in C:
@@ -99,7 +99,8 @@ for h in C:
 
 # All vehicles return to depot exactly once
 for v in V:
-    m.addConstr(quicksum(x[i,n-1,v] for i in C) == 1, 'conD[' + str(v) + ']-')  
+    if j!=i:
+        m.addConstr(quicksum(x[i,n-1,v] for i in C) == 1, 'conD[' + str(v) + ']-')  
 
 # Time window - part 1
 for j in N:
