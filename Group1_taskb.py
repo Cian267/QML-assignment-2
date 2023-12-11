@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #============================================MODEL DATA============================================
-
+# CHANGE 14:40
 with open("data_small.txt", "r") as f:      # Read the data file
     data = f.readlines()                       
 
