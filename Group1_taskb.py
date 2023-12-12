@@ -46,7 +46,7 @@ d=nodes[:,5]                                # due time of windows
 s=nodes[:,6]                                # service times at nodes
 
 b=(130, 130, 130)                           # vehicle capacities
-M=3000                                      # big M
+#M=3000                                      # big M
 
 # Create array for euclidian distances between nodes - c(i,j)
 c=np.zeros((n,n))    
@@ -119,7 +119,7 @@ for i in N:
             if j!=i:
                 if j!=0:
                     if i!=n-1:
-                        m.addConstr(t[i,v] + c[i,j] + s[i] - M*(1-x[i,j,v]) <= t[j,v], 'conH[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
+                        m.addConstr(t[i,v] + c[i,j] + s[i] - max(d[i] + c[i, j] + s[i] - r[j], 0)*(1-x[i,j,v]) <= t[j,v], 'conH[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
      
 m.update()
 # m.write('VRPmodel.lp')
