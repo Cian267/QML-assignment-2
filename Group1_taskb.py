@@ -47,12 +47,8 @@ r=nodes[:,4]                                # ready time of windows
 d=nodes[:,5]                                # due time of windows
 s=nodes[:,6]                                # service times at nodes
 
-<<<<<<< HEAD
 b=(130, 130, 130)                           # vehicle capacities
 #M=3000                                      # big M
-=======
-M=3000                                      # big M
->>>>>>> 849069e5f34bd8f23d58193199831532ff17e93c
 
 # Create array for euclidian distances between nodes - c(i,j)
 c=np.zeros((n,n))    
