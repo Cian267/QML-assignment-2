@@ -31,14 +31,35 @@ nodes=np.vstack((VRP, VRP[:1]))             # matrix data nodes: customers + sta
 
 N_row=nodes[:,0]                            # vector of nodes id: customers + start/end depot
 n=len(N_row)                                # Number of nodes
+M=6000                                      # big M
 
+# Case 1
+# K=1                                         # Number of vehicles
+# vehicle_capacity = 400
+# b=[vehicle_capacity]*K                      # vehicle capacities
+# nodes[:,4] = 0
+# nodes[:,5] = M
+
+# Case 2
+# K=1                                         # Number of vehicles
+# vehicle_capacity = 400
+# b=[vehicle_capacity]*K                      # vehicle capacities
+
+# Case 3
 K=3                                         # Number of vehicles
 vehicle_capacity = 400
-b=[vehicle_capacity]*K
+b=[vehicle_capacity]*K                      # vehicle capacities
+nodes[:,4] = 0
+nodes[:,5] = M
+
+# Case 4
+# K=6                                         # Number of vehicles
+# vehicle_capacity = 80
+# b=[vehicle_capacity]*K                      # vehicle capacities
 
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
-C=range(1,len(N)-1)                           # Set of customers
+C=range(1,len(N)-1)                         # Set of customers
 
 xc=nodes[:,1]                               # X-position of nodes
 yc=nodes[:,2]                               # Y-position of nodes
@@ -47,7 +68,7 @@ r=nodes[:,4]                                # ready time of windows
 d=nodes[:,5]                                # due time of windows
 s=nodes[:,6]                                # service times at nodes
 
-M=3000                                      # big M
+
 
 # Create array for euclidian distances between nodes - c(i,j)
 c=np.zeros((n,n))    
@@ -91,7 +112,7 @@ for v in V:
     
 # All vehicles leave depot exactly once
 for v in V:
-    m.addConstr(quicksum(x[0,j,v] for j in C)==1, 'conB[' +  str(v) + ']-')      
+    m.addConstr(quicksum(x[0,j,v] for j in N if j!=0 if j!=n-1)==1, 'conB[' +  str(v) + ']-')      
 
 # Incoming and outcoming arc
 for h in C:
@@ -102,6 +123,14 @@ for h in C:
 for v in V:
     if j!=i:
         m.addConstr(quicksum(x[i,n-1,v] for i in C) == 1, 'conD[' + str(v) + ']-')  
+
+# No vehicles arrive at node 0
+# for v in V:
+#     m.addConstr(quicksum(x[i,0,v] for i in C) == 0, 'conD_2[' + str(v) + ']-')
+    
+# # No vehicles depart from last node
+# for v in V:
+#     m.addConstr(quicksum(x[n-1,j,v] for j in C) == 0, 'conD_3[' + str(v) + ']-')
 
 # Time window - part 1
 for j in N:
@@ -123,7 +152,7 @@ for i in N:
                         m.addConstr(t[i,v] + c[i,j] + s[i] - M*(1-x[i,j,v]) <= t[j,v], 'conH[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
      
 m.update()
-# m.write('VRPmodel.lp')
+m.write('VRPmodel.lp')
 m.Params.timeLimit = 1800 #time limit so optimization will stop after 1000 seconds 
 m.optimize()
 print("\nTotal distance travelled is: ", m.objVal)
@@ -158,49 +187,52 @@ for v in V:
                 s = s + '    .'
         print (s)       
 
-for v in V:
-    step = 0
-    ii = 0
-    jj = 0
-    order = [0]
-    time = [0]
+# for v in V:
+#     step = 0
+#     ii = 0
+#     jj = 0
+#     order = [0]
+#     time = [0]
     
-    while step != 20:
-        if int(x[ii,jj,v].x) > 0.5:
-            step = jj
-            order.append(step)
-            time.append(round(float(t[jj,v].x), 1))
-            ii = jj
-            jj = 0
-        else:
-            jj = jj + 1
+#     while step != 20:
+#         # print(step)
+#         if int(x[ii,jj,v].x) > 0.5:
+#             step = jj
+#             order.append(step)
+#             time.append(round(float(t[jj,v].x), 1))
+#             ii = jj
+#             jj = 0
+#         else:
+#             jj = jj + 1
     
-    timetable = np.vstack((order, time))
+#     timetable = np.vstack((order, time))
     
-    total_demand = 0
-    for i in order:
-        total_demand = total_demand + a[i]
+#     total_demand = 0
+#     for i in order:
+#         total_demand = total_demand + a[i]
     
-    load = [total_demand]
-    newload = total_demand
+#     load = [total_demand]
+#     newload = total_demand
     
-    for i in order:
-        load.append(newload - a[i])
-        newload = newload - a[i]
+#     for i in order:
+#         load.append(newload - a[i])
+#         newload = newload - a[i]
     
-    load.pop()
+#     load.pop()
     
-    timetable = np.vstack((timetable,load))
-    print('\nTable of arrivel times of vehicle ', v, ':')  
-    s = ''
-    tt = 0
-    names = ['Node', 'Time', 'Load']
-    print(s)
-    for i in range(len(names)):
-        s = names[i]
-        for j in range(len(order)):
-            s = s + '%8s' % str(timetable[i,j])
-        print (s)
+#     timetable = np.vstack((timetable,load))
+#     print('\nTable of arrivel times of vehicle ', v, ':')  
+#     s = ''
+#     tt = 0
+#     names = ['Node', 'Time', 'Load']
+#     print(s)
+#     for i in range(len(names)):
+#         s = names[i]
+#         for j in range(len(order)):
+#             s = s + '%8s' % str(timetable[i,j])
+#         print (s)
+
+print("\nComputational time is: ", m.Runtime)
 
 # Plot the routes that are decided to be travelled 
 arc_solution = m.getAttr('x', x)
