@@ -81,11 +81,17 @@ m.setObjective(obj, GRB.MINIMIZE)
 # All customers visited exactly once, except for depots
 for i in C:
     m.addConstr(quicksum(x[i,j,v] for j in N if i != j if j!=0 if j!=1 if j!=2 for v in V )==1, 'conA[' + str(i) + ']-')
-    
+
+# The vehicles leave the depots once each
+for v in V:
+    m.addConstr(quicksum(x[0,j,v] + x[1,j,v] + x[2,j,v] for j in C) ==1, 'conB[' + ']-')
+
+'''    
 # All depots are used once
-m.addConstr(quicksum(x[0,j,v] for j in C for v in V) ==1, 'conB[' + ']-')
-m.addConstr(quicksum(x[1,j,v] for j in C for v in V) ==1, 'conC[' + ']-')
-m.addConstr(quicksum(x[2,j,v] for j in C for v in V) ==1, 'conD[' + ']-')
+m.addConstr(quicksum(x[0,j,v] for j in C for v in V) <=1, 'conB[' + ']-')
+m.addConstr(quicksum(x[1,j,v] for j in C for v in V) <=1, 'conC[' + ']-')
+m.addConstr(quicksum(x[2,j,v] for j in C for v in V) <=1, 'conD[' + ']-')
+'''
 
 # ("end"-depots are not used as outgoing arc)
 m.addConstr(quicksum(x[n-1,j,v] for j in C for v in V) ==0, 'conE[' + ']-')
