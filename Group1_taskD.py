@@ -46,16 +46,16 @@ M=6000                                      # big M
 # b=[vehicle_capacity]*K                      # vehicle capacities
 
 # Case 3
-K=3                                         # Number of vehicles
-vehicle_capacity = 400
-b=[vehicle_capacity]*K                      # vehicle capacities
-nodes[:,4] = 0
-nodes[:,5] = M
+# K=3                                         # Number of vehicles
+# vehicle_capacity = 400
+# b=[vehicle_capacity]*K                      # vehicle capacities
+# nodes[:,4] = 0
+# nodes[:,5] = M
 
 # Case 4
-# K=6                                         # Number of vehicles
-# vehicle_capacity = 80
-# b=[vehicle_capacity]*K                      # vehicle capacities
+K=6                                         # Number of vehicles
+vehicle_capacity = 80
+b=[vehicle_capacity]*K                      # vehicle capacities
 
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
