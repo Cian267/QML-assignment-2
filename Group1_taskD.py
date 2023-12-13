@@ -33,29 +33,37 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 M=6000                                      # big M
 
+'''
 # Case 1
-# K=1                                         # Number of vehicles
-# vehicle_capacity = 400
-# b=[vehicle_capacity]*K                      # vehicle capacities
-# nodes[:,4] = 0
-# nodes[:,5] = M
+K=1                                         # Number of vehicles
+vehicle_capacity = 400
+b=[vehicle_capacity]*K                      # vehicle capacities
+nodes[:,4] = 0
+nodes[:,5] = M
+'''
 
+'''
 # Case 2
-# K=1                                         # Number of vehicles
-# vehicle_capacity = 400
-# b=[vehicle_capacity]*K                      # vehicle capacities
+K=1                                         # Number of vehicles
+vehicle_capacity = 400
+b=[vehicle_capacity]*K                      # vehicle capacities
+'''
+
 
 # Case 3
-# K=3                                         # Number of vehicles
-# vehicle_capacity = 400
-# b=[vehicle_capacity]*K                      # vehicle capacities
-# nodes[:,4] = 0
-# nodes[:,5] = M
+K=3                                         # Number of vehicles
+vehicle_capacity = 400
+b=[vehicle_capacity]*K                      # vehicle capacities
+nodes[:,4] = 0
+nodes[:,5] = M
 
+
+'''
 # Case 4
 K=6                                         # Number of vehicles
 vehicle_capacity = 80
 b=[vehicle_capacity]*K                      # vehicle capacities
+'''
 
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
@@ -103,7 +111,7 @@ m.setObjective(obj, GRB.MINIMIZE)
 ## Constraints    
 
 # All customers visited exactly once, except for depot
-for i in C:
+for i in N:
     m.addConstr(quicksum(x[i,j,v] for j in N if i != j for v in V )==1, 'conA[' + str(i) + ']-')
     
 # Capacity constraint
@@ -150,7 +158,9 @@ for i in N:
                 if j!=0:
                     if i!=n-1:
                         m.addConstr(t[i,v] + c[i,j] + s[i] - M*(1-x[i,j,v]) <= t[j,v], 'conH[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
-     
+  
+ #       max(d[i] + c[i, j] + s[i] - r[j], 0)
+  
 m.update()
 m.write('VRPmodel.lp')
 m.Params.timeLimit = 1800 #time limit so optimization will stop after 1000 seconds 
@@ -233,6 +243,7 @@ for v in V:
 #         print (s)
 
 print("\nComputational time is: ", m.Runtime)
+print("\nTotal distance travelled is: ", m.objVal)
 
 # Plot the routes that are decided to be travelled 
 arc_solution = m.getAttr('x', x)
@@ -245,7 +256,8 @@ for i in range(1,n-1):
     plt.annotate(str(i),(xc[i],yc[i]))
 plt.plot(xc[0],yc[0],c='g',marker='s')
         
-colors=('--g', ':r', 'b')    
+colors=('--g', ':r', '--b')   
+#colors=('--g', ':r', '--b', '-.m', '--c',':k')    
     
 for i in range(n):
     for j in range(n):

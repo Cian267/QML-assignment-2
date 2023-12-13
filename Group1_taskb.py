@@ -212,9 +212,9 @@ plt.ylabel('y-coordinate')
 plt.scatter(xc[1:n-1],yc[1:n-1])
 for i in range(1,n-1):
     plt.annotate(str(i),(xc[i],yc[i]))
-plt.plot(xc[0],yc[0],c='g',marker='s')
+plt.plot(xc[0],yc[0],c='y',marker='s')
         
-colors=('--g', ':r', 'b')    
+colors=('--r', 'g', ':b')    
     
 for i in range(n):
     for j in range(n):

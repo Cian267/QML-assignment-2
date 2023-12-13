@@ -87,7 +87,7 @@ for v in V:
     m.addConstr(quicksum(x[0,j,v] + x[1,j,v] + x[2,j,v] for j in C) ==1, 'conB[' + ']-')
 
 '''    
-# All depots are used once
+# All depots are used once - misunderstood the task
 m.addConstr(quicksum(x[0,j,v] for j in C for v in V) <=1, 'conB[' + ']-')
 m.addConstr(quicksum(x[1,j,v] for j in C for v in V) <=1, 'conC[' + ']-')
 m.addConstr(quicksum(x[2,j,v] for j in C for v in V) <=1, 'conD[' + ']-')
@@ -134,17 +134,17 @@ for i in N:
                             if i!=n-1:
                                 if i!=n-2:
                                     if i!=n-3:
-                                        m.addConstr(t[i,v] + c[i,j] + s[i] - M*(1-x[i,j,v]) <= t[j,v], 'conP[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
+                                        m.addConstr(t[i,v] + c[i,j] + s[i] - max(d[i] + c[i, j] + s[i] - r[j], 0)*(1-x[i,j,v]) <= t[j,v], 'conP[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
 
 m.update()
 m.Params.timeLimit = 1800 #time limit so optimization will stop after 1000 seconds 
 m.optimize()
-print("\nTotal distance travelled is: ", m.objVal)
+print("\nTotal distance traveled is: ", m.objVal)
 
 # Plot the routes that are decided to be travelled 
 arc_solution = m.getAttr('x', x)
 #
-fig= plt.figure(figsize=(15,15))
+fig= plt.figure(figsize=(6,6))
 plt.xlabel('x-coordinate')
 plt.ylabel('y-coordinate')
 plt.scatter(xc[1:n-3],yc[1:n-3])
@@ -154,7 +154,7 @@ plt.plot(xc[0],yc[0],c='y',marker='s')
 plt.plot(xc[1],yc[1],c='y',marker='s')
 plt.plot(xc[2],yc[2],c='y',marker='s')
        
-colors=('--r', 'g', '-.b')    
+colors=('--r', 'g', ':b')    
     
 for i in range(n):
     for j in range(n):
