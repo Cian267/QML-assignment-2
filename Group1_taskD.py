@@ -42,21 +42,21 @@ nodes[:,4] = 0
 nodes[:,5] = M
 '''
 
-'''
+
 # Case 2
 K=1                                         # Number of vehicles
 vehicle_capacity = 400
 b=[vehicle_capacity]*K                      # vehicle capacities
+
+
 '''
-
-
 # Case 3
 K=3                                         # Number of vehicles
 vehicle_capacity = 400
 b=[vehicle_capacity]*K                      # vehicle capacities
 nodes[:,4] = 0
 nodes[:,5] = M
-
+'''
 
 '''
 # Case 4
@@ -110,8 +110,9 @@ m.setObjective(obj, GRB.MINIMIZE)
 
 ## Constraints    
 
+
 # All customers visited exactly once, except for depot
-for i in N:
+for i in C: 
     m.addConstr(quicksum(x[i,j,v] for j in N if i != j for v in V )==1, 'conA[' + str(i) + ']-')
     
 # Capacity constraint
@@ -133,12 +134,12 @@ for v in V:
         m.addConstr(quicksum(x[i,n-1,v] for i in C) == 1, 'conD[' + str(v) + ']-')  
 
 # No vehicles arrive at node 0
-# for v in V:
-#     m.addConstr(quicksum(x[i,0,v] for i in C) == 0, 'conD_2[' + str(v) + ']-')
-    
+#for v in V:
+ #   m.addConstr(quicksum(x[i,0,v] for i in C) == 0, 'conD_2[' + str(v) + ']-')
+  
 # # No vehicles depart from last node
-# for v in V:
-#     m.addConstr(quicksum(x[n-1,j,v] for j in C) == 0, 'conD_3[' + str(v) + ']-')
+for v in V:
+    m.addConstr(quicksum(x[n-1,j,v] for j in C) == 0, 'conD_3[' + str(v) + ']-')
 
 # Time window - part 1
 for j in N:
