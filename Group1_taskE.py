@@ -31,6 +31,8 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 
 K=3                                         # Number of vehicles
+vehicle_capacity = 130
+b=[vehicle_capacity]*K
 
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
@@ -43,7 +45,7 @@ r=nodes[:,4]                                # ready time of windows
 d=nodes[:,5]                                # due time of windows
 s=nodes[:,6]                                # service times at nodes
 
-b=(130, 130, 130)                           # vehicle capacities
+                          # vehicle capacities
 M=3000                                      # big M
 
 # Create array for euclidian distances between nodes - c(i,j)
@@ -154,7 +156,7 @@ plt.plot(xc[0],yc[0],c='y',marker='s')
 plt.plot(xc[1],yc[1],c='y',marker='s')
 plt.plot(xc[2],yc[2],c='y',marker='s')
        
-colors=('--r', 'g', ':b')    
+colors = list(mcolors.TABLEAU_COLORS) 
     
 for i in range(n):
     for j in range(n):

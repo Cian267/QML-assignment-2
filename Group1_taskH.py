@@ -31,6 +31,8 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 
 K=3                                         # Number of vehicles
+vehicle_capacity = 130
+b=[vehicle_capacity]*K 
 
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
@@ -43,9 +45,11 @@ a=nodes[:,3]                                # demand of nodes
 r=nodes[:,4]                                # ready time of windows
 d=nodes[:,5]                                # due time of windows
 s=nodes[:,6]                                # service times at nodes
-
-b=(130, 130, 130)                           # vehicle capacities
-u=(5, 10, 15)                                 # daily usage costs
+                          # vehicle capacities
+u=np.zeros(n)                                # daily usage costs
+u[0] = 5
+u[1] = 10
+u[2] = 15
 M=3000                                      # big M
 
 
@@ -92,7 +96,9 @@ for j in N:
 
 ## Objective - total distance traveled, i.e., total cost
 #obj = (quicksum(x[i,j,v]*(c[i,j]) for i in N for j in N for v in V))
-obj = (quicksum(x[i,j,v]*(c[i,j] + u[0]*x[0,j,v] + u[1]*x[1,j,v] + u[2]*x[2,j,v]) for i in N for j in N for v in V))
+#obj = (quicksum(x[i,j,v]*(c[i,j] + u[0]*x[0,j,v] + u[1]*x[1,j,v] + u[2]*x[2,j,v]) for i in N for j in N for v in V))
+obj = (quicksum(x[i,j,v]*(c[i,j] + u[i]) for i in N for j in N for v in V))
+
 m.setObjective(obj, GRB.MINIMIZE)
 
 ## Constraints    
@@ -173,7 +179,7 @@ plt.plot(xc[0],yc[0],c='y',marker='s')
 plt.plot(xc[1],yc[1],c='y',marker='s')
 plt.plot(xc[2],yc[2],c='y',marker='s')
        
-colors=('--r', 'g', ':b')    
+colors = list(mcolors.TABLEAU_COLORS) 
     
 for i in range(n):
     for j in range(n):
