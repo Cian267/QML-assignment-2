@@ -71,9 +71,9 @@ for i in N:
             
 # start time of service at customer i by vehicle v 
 t = {}
-for j in N:
+for i in N:
     for v in V:
-        t[j,v] = m.addVar(vtype=GRB.CONTINUOUS, lb = 0, name="T_%s,%s" %(j,v))
+        t[i,v] = m.addVar(vtype=GRB.CONTINUOUS, lb = 0, name="T_%s,%s" %(i,v))
 
 ## Objective - total distance traveled, i.e., total cost
 obj = (quicksum(c[i,j]*x[i,j,v] for i in N for j in N for v in V))
@@ -117,14 +117,14 @@ for h in C:
          m.addConstr(quicksum(x[i,h,v] for i in N if h !=i ) == quicksum(x[h,j,v] for j in N if h!= j ), 'conL[' + str(h) + ',' + str(v) + ']-')    
 
 # Time window - part 1
-for j in N:
+for i in N:
     for v in V:
-        m.addConstr(t[j,v] >= r[j], 'conN[' + str(j) + ',' + str(v) + ']-')   
+        m.addConstr(t[i,v] >= r[i], 'conN[' + str(i) + ',' + str(v) + ']-')   
             
 # Time window- part 2
-for j in N:
+for i in N:
     for v in V:
-          m.addConstr(t[j,v] <= d[j], 'conO[' + str(j) + ',' + str(v) + ']-') 
+          m.addConstr(t[i,v] <= d[i], 'conO[' + str(i) + ',' + str(v) + ']-') 
 
 # Subtour elimination
 for i in N:
