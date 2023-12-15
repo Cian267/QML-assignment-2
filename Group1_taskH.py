@@ -165,6 +165,12 @@ m.Params.timeLimit = 1800 #time limit so optimization will stop after 1000 secon
 m.optimize()
 print("\nTotal distance traveled is: ", m.objVal)
 
+distance_cost = 0
+for v in range(len(V)):
+    for i in range(len(N)):
+        for j in range(len(N)):
+            distance_cost = distance_cost + c[i,j] * x[i,j,v].X
+
 
 
 # Plot the routes that are decided to be travelled 
