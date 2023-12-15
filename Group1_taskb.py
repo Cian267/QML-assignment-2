@@ -34,7 +34,7 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 
 K=3                                         # Number of vehicles
-vehicle_capacity = 400
+vehicle_capacity = 130
 b=[vehicle_capacity]*K
 
 V=range(K)                                  # Set of vehicles
