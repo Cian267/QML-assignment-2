@@ -12,6 +12,7 @@ import math
 import copy
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 with open("data_small_3dep.txt", "r") as f:      # Read the data file
     data = f.readlines()                       
