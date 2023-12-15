@@ -12,6 +12,7 @@ import math
 import copy
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 #============================================MODEL DATA============================================
 # CHANGE 14:40
@@ -33,37 +34,29 @@ N_row=nodes[:,0]                            # vector of nodes id: customers + st
 n=len(N_row)                                # Number of nodes
 M=6000                                      # big M
 
-'''
 # Case 1
-K=1                                         # Number of vehicles
-vehicle_capacity = 400
-b=[vehicle_capacity]*K                      # vehicle capacities
-nodes[:,4] = 0
-nodes[:,5] = M
-'''
-
+# K=1                                         # Number of vehicles
+# vehicle_capacity = 400
+# b=[vehicle_capacity]*K                      # vehicle capacities
+# nodes[:,4] = 0
+# nodes[:,5] = M
 
 # Case 2
 K=1                                         # Number of vehicles
 vehicle_capacity = 400
 b=[vehicle_capacity]*K                      # vehicle capacities
 
-
-'''
 # Case 3
-K=3                                         # Number of vehicles
-vehicle_capacity = 400
-b=[vehicle_capacity]*K                      # vehicle capacities
-nodes[:,4] = 0
-nodes[:,5] = M
-'''
+# K=3                                         # Number of vehicles
+# vehicle_capacity = 400
+# b=[vehicle_capacity]*K                      # vehicle capacities
+# nodes[:,4] = 0
+# nodes[:,5] = M
 
-'''
 # Case 4
-K=6                                         # Number of vehicles
-vehicle_capacity = 80
-b=[vehicle_capacity]*K                      # vehicle capacities
-'''
+# K=6                                         # Number of vehicles
+# vehicle_capacity = 80
+# b=[vehicle_capacity]*K                      # vehicle capacities
 
 V=range(K)                                  # Set of vehicles
 N=range (len (N_row))                       # Set of nodes   
@@ -110,9 +103,8 @@ m.setObjective(obj, GRB.MINIMIZE)
 
 ## Constraints    
 
-
 # All customers visited exactly once, except for depot
-for i in C: 
+for i in C:
     m.addConstr(quicksum(x[i,j,v] for j in N if i != j for v in V )==1, 'conA[' + str(i) + ']-')
     
 # Capacity constraint
@@ -131,15 +123,15 @@ for h in C:
 # All vehicles return to depot exactly once
 for v in V:
     if j!=i:
-        m.addConstr(quicksum(x[i,n-1,v] for i in C) == 1, 'conD[' + str(v) + ']-')  
+        m.addConstr(quicksum(x[i,n-1,v] for i in N) == 1, 'conD[' + str(v) + ']-')  
 
 # No vehicles arrive at node 0
-#for v in V:
- #   m.addConstr(quicksum(x[i,0,v] for i in C) == 0, 'conD_2[' + str(v) + ']-')
-  
+# for v in V:
+#     m.addConstr(quicksum(x[i,0,v] for i in C) == 0, 'conD_2[' + str(v) + ']-')
+    
 # # No vehicles depart from last node
-for v in V:
-    m.addConstr(quicksum(x[n-1,j,v] for j in C) == 0, 'conD_3[' + str(v) + ']-')
+# for v in V:
+#     m.addConstr(quicksum(x[n-1,j,v] for j in C) == 0, 'conD_3[' + str(v) + ']-')
 
 # Time window - part 1
 for j in N:
@@ -159,26 +151,24 @@ for i in N:
                 if j!=0:
                     if i!=n-1:
                         m.addConstr(t[i,v] + c[i,j] + s[i] - M*(1-x[i,j,v]) <= t[j,v], 'conH[' + str(i) + ',' + str(j) + ',' + str(v) + ']-') 
-  
- #       max(d[i] + c[i, j] + s[i] - r[j], 0)
-  
+     
 m.update()
 m.write('VRPmodel.lp')
 m.Params.timeLimit = 1800 #time limit so optimization will stop after 1000 seconds 
 m.optimize()
 print("\nTotal distance travelled is: ", m.objVal)
-# for i in N:
-#     print('\n')
-#     for j in N:
-#         print(x[i,j,0].x)
-# t = 1
-# for i in N:
-#     s = '%8s' % t
-#     t = t + 1
-#     for j in N:
-#         s = s + '%8.1f' % x[i,j,0].x
-#     #s = s + '%8.1f' #% sum (k[p,m,1].x for m in M)    
-#     print (s)  
+
+L = []
+for j in range(len(N)):
+    K = []
+    for v in range(len(V)):
+        K.append(t[j,v].X)
+
+    L.append(K)
+
+times = np.array(L)
+
+print(times)
 
 for v in V:
     print('\nTable of tours of vehicle ', v, ':\n')  
@@ -257,9 +247,7 @@ for i in range(1,n-1):
     plt.annotate(str(i),(xc[i],yc[i]))
 plt.plot(xc[0],yc[0],c='g',marker='s')
         
-colors=('--g', ':r', '--b')   
-#colors=('--g', ':r', '--b', '-.m', '--c',':k')    
-    
+colors = list(mcolors.TABLEAU_COLORS)    
 for i in range(n):
     for j in range(n):
         for v in V:  

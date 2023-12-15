@@ -12,6 +12,7 @@ import math
 import copy
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 #============================================MODEL DATA============================================
 # CHANGE 14:40
@@ -47,8 +48,7 @@ r=nodes[:,4]                                # ready time of windows
 d=nodes[:,5]                                # due time of windows
 s=nodes[:,6]                                # service times at nodes
 
-b=(130, 130, 130)                           # vehicle capacities
-#M=3000                                      # big M
+M=3000                                      # big M
 
 # Create array for euclidian distances between nodes - c(i,j)
 c=np.zeros((n,n))    
@@ -214,7 +214,7 @@ for i in range(1,n-1):
     plt.annotate(str(i),(xc[i],yc[i]))
 plt.plot(xc[0],yc[0],c='y',marker='s')
         
-colors=('--r', 'g', ':b')    
+colors = list(mcolors.TABLEAU_COLORS)       
     
 for i in range(n):
     for j in range(n):
