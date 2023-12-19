@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
-with open("data_small_3dep.txt", "r") as f:      # Read the data file
+with open("data_large_3dep.txt", "r") as f:      # Read the data file
     data = f.readlines()                      
 
 VRP = []                                    # Create array for data related to nodes
@@ -31,8 +31,8 @@ nodes=np.vstack((VRP, VRP[:3]))             # matrix data nodes: customers + sta
 N_row=nodes[:,0]                            # vector of nodes id: customers + start/end depots
 n=len(N_row)                                # Number of nodes
 
-K=3                                         # Number of vehicles
-vehicle_capacity = 130
+K=6                                         # Number of vehicles
+vehicle_capacity = 300
 b=[vehicle_capacity]*K 
 
 V=range(K)                                  # Set of vehicles
@@ -49,8 +49,8 @@ s=nodes[:,6]                                # service times at nodes
                           # vehicle capacities
 u=np.zeros(n)                                # daily usage costs
 u[0] = 5
-u[1] = 10
-u[2] = 15
+u[1] = 0
+u[2] = 0
 M=3000                                      # big M
 
 
